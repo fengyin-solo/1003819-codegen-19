@@ -28,6 +28,16 @@
         </tr>
       </tbody>
     </table>
+    <section class="panel">
+      <h3>接待待办</h3>
+      <ul v-if="todos.length" class="todo-list">
+        <li v-for="todo in todos" :key="todo.visitNo">
+          <span>{{ todo.text }}</span>
+          <span class="todo-time">{{ formatTime(todo.createdAt) }}</span>
+        </li>
+      </ul>
+      <p v-else class="empty-state">暂无接待待办，工地接待回传成功后会自动新增</p>
+    </section>
     <footer class="page-foot">
       <span>数据保存在本机浏览器里，换浏览器或清缓存会回到示例数据</span>
     </footer>
@@ -42,11 +52,18 @@ import type { OverviewResult } from '@/data/types'
 
 const cards = ref<OverviewResult['cards']>([])
 const moduleRows = ref<OverviewResult['modules']>([])
+const todos = ref<OverviewResult['receptionTodos']>([])
+
+function formatTime(iso: string): string {
+  const time = new Date(iso)
+  return Number.isNaN(time.getTime()) ? iso : time.toLocaleString('zh-CN', { hour12: false })
+}
 
 function refresh() {
   const payload = loadOverview()
   cards.value = payload.cards
   moduleRows.value = payload.modules
+  todos.value = payload.receptionTodos
 }
 
 onMounted(refresh)
